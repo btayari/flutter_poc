@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'screens/main_shell_screen.dart';
 import 'screens/tactical_lineup_screen.dart';
 import 'screens/squad_management_screen.dart';
 
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
 
       ),
-      home: const TacticalLineupScreen(),
+      home: const MainShellScreen(),
       routes: {
         '/tactical': (context) => const TacticalLineupScreen(),
         '/squad': (context) => const SquadManagementScreen(),
