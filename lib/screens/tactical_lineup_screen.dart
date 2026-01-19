@@ -235,6 +235,8 @@ class _TacticalLineupContentState extends State<TacticalLineupContent> {
                   ),
                   const SizedBox(height: 24),
                   const TeamStatsWidget(),
+                  const SizedBox(height: 24),
+                  PlayersListWidget(players: DataProvider.players),
                 ],
               ),
             ),
