@@ -22,7 +22,7 @@ class SideMenu extends StatelessWidget {
 
           // Navigation Menu
           Expanded(
-            child: _buildNavigationMenu(),
+            child: _buildNavigationMenu(context),
           ),
 
           // Footer
@@ -141,7 +141,7 @@ class SideMenu extends StatelessWidget {
     );
   }
 
-  Widget _buildNavigationMenu() {
+  Widget _buildNavigationMenu(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
@@ -186,9 +186,11 @@ class SideMenu extends StatelessWidget {
 
         _buildMenuItem(
           icon: Icons.people_rounded,
-          label: 'Squad',
+          label: 'Squad Management',
           isActive: false,
-          onTap: () {},
+          onTap: () {
+            Navigator.pushNamed(context, '/squad');
+          },
         ),
         _buildMenuItem(
           icon: Icons.bar_chart_rounded,
