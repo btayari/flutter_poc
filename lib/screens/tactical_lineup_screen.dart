@@ -174,11 +174,14 @@ class _TacticalLineupContentState extends State<TacticalLineupContent> {
                     color: Colors.white,
                   ),
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.settings, size: 24),
-                  style: IconButton.styleFrom(
-                    foregroundColor: Colors.grey[400],
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.settings, size: 24),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Colors.grey[400],
+                    ),
                   ),
                 ),
               ],
@@ -201,29 +204,32 @@ class _TacticalLineupContentState extends State<TacticalLineupContent> {
                     isWebLayout: true,
                   ),
                   const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.auto_awesome, size: 20),
-                      label: const Text(
-                        'Auto Fill Best XI',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0d59f2).withOpacity(0.15),
-                        foregroundColor: const Color(0xFF0d59f2),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(
-                            color: const Color(0xFF0d59f2).withOpacity(0.3),
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.auto_awesome, size: 20),
+                        label: const Text(
+                          'Auto Fill Best XI',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        elevation: 0,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0d59f2).withOpacity(0.15),
+                          foregroundColor: const Color(0xFF0d59f2),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(
+                              color: const Color(0xFF0d59f2).withOpacity(0.3),
+                            ),
+                          ),
+                          elevation: 0,
+                        ),
                       ),
                     ),
                   ),
@@ -501,11 +507,14 @@ class _TacticalLineupScreenState extends State<TacticalLineupScreen> {
                     color: Colors.white,
                   ),
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.settings, size: 24),
-                  style: IconButton.styleFrom(
-                    foregroundColor: Colors.grey[400],
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.settings, size: 24),
+                    style: IconButton.styleFrom(
+                      foregroundColor: Colors.grey[400],
+                    ),
                   ),
                 ),
               ],
@@ -528,29 +537,32 @@ class _TacticalLineupScreenState extends State<TacticalLineupScreen> {
                     isWebLayout: true,
                   ),
                   const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.auto_awesome, size: 20),
-                      label: const Text(
-                        'Auto Fill Best XI',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0d59f2).withOpacity(0.15),
-                        foregroundColor: const Color(0xFF0d59f2),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(
-                            color: const Color(0xFF0d59f2).withOpacity(0.3),
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.auto_awesome, size: 20),
+                        label: const Text(
+                          'Auto Fill Best XI',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        elevation: 0,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0d59f2).withOpacity(0.15),
+                          foregroundColor: const Color(0xFF0d59f2),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(
+                              color: const Color(0xFF0d59f2).withOpacity(0.3),
+                            ),
+                          ),
+                          elevation: 0,
+                        ),
                       ),
                     ),
                   ),
@@ -576,33 +588,36 @@ class _TacticalLineupScreenState extends State<TacticalLineupScreen> {
           top: BorderSide(color: Colors.grey[800]!),
         ),
       ),
-      child: SizedBox(
-        width: double.infinity,
-        height: 56,
-        child: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF0d59f2),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 8,
-            shadowColor: const Color(0xFF0d59f2).withOpacity(0.4),
-          ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Make Prediction',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0d59f2),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              SizedBox(width: 12),
-              Icon(Icons.arrow_forward, size: 24),
-            ],
+              elevation: 8,
+              shadowColor: const Color(0xFF0d59f2).withOpacity(0.4),
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Make Prediction',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: 12),
+                Icon(Icons.arrow_forward, size: 24),
+              ],
+            ),
           ),
         ),
       ),

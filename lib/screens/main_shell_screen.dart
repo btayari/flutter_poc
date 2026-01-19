@@ -241,27 +241,30 @@ class _SideMenuWithCallback extends StatelessWidget {
   }
 
   Widget _buildMenuItem({required IconData icon, required String label, required int index, required bool isActive}) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: isActive ? const Color(0xFF0d59f2).withOpacity(0.15) : Colors.transparent,
-        borderRadius: BorderRadius.circular(10),
-        border: isActive ? Border.all(color: const Color(0xFF0d59f2).withOpacity(0.3)) : null,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(
+          color: isActive ? const Color(0xFF0d59f2).withOpacity(0.15) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
-          onTap: () => onItemSelected(index),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Row(
-              children: [
-                Icon(icon, size: 22, color: isActive ? const Color(0xFF0d59f2) : Colors.grey[400]),
-                const SizedBox(width: 14),
-                Expanded(child: Text(label, style: TextStyle(fontSize: 14, fontWeight: isActive ? FontWeight.w600 : FontWeight.w500, color: isActive ? Colors.white : Colors.grey[400]))),
-                if (isActive) Container(width: 6, height: 6, decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFF0d59f2))),
-              ],
+          border: isActive ? Border.all(color: const Color(0xFF0d59f2).withOpacity(0.3)) : null,
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(10),
+            onTap: () => onItemSelected(index),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                children: [
+                  Icon(icon, size: 22, color: isActive ? const Color(0xFF0d59f2) : Colors.grey[400]),
+                  const SizedBox(width: 14),
+                  Expanded(child: Text(label, style: TextStyle(fontSize: 14, fontWeight: isActive ? FontWeight.w600 : FontWeight.w500, color: isActive ? Colors.white : Colors.grey[400]))),
+                  if (isActive) Container(width: 6, height: 6, decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFF0d59f2))),
+                ],
+              ),
             ),
           ),
         ),

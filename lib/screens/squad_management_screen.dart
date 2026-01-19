@@ -373,20 +373,26 @@ class _SquadManagementContentState extends State<SquadManagementContent> {
           child: Row(
             children: [
               Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.search, size: 16),
-                  label: const Text('Scout', overflow: TextOverflow.ellipsis),
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0d59f2), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.search, size: 16),
+                    label: const Text('Scout', overflow: TextOverflow.ellipsis),
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0d59f2), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.filter_list, size: 16),
-                  label: const Text('Filter', overflow: TextOverflow.ellipsis),
-                  style: OutlinedButton.styleFrom(foregroundColor: Colors.grey[400], padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8), side: BorderSide(color: Colors.grey[700]!), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: OutlinedButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.filter_list, size: 16),
+                    label: const Text('Filter', overflow: TextOverflow.ellipsis),
+                    style: OutlinedButton.styleFrom(foregroundColor: Colors.grey[400], padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8), side: BorderSide(color: Colors.grey[700]!), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                  ),
                 ),
               ),
             ],
@@ -468,20 +474,23 @@ class _SquadManagementContentState extends State<SquadManagementContent> {
           final isSelected = _selectedFilter == filter;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              label: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(filter, style: TextStyle(color: isSelected ? Colors.white : Colors.grey[400], fontSize: 12, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500)),
-                  if (filter.contains('Sort')) Padding(padding: const EdgeInsets.only(left: 4), child: Icon(Icons.sort, size: 16, color: isSelected ? Colors.white : Colors.grey[400])),
-                ],
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: FilterChip(
+                label: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(filter, style: TextStyle(color: isSelected ? Colors.white : Colors.grey[400], fontSize: 12, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500)),
+                    if (filter.contains('Sort')) Padding(padding: const EdgeInsets.only(left: 4), child: Icon(Icons.sort, size: 16, color: isSelected ? Colors.white : Colors.grey[400])),
+                  ],
+                ),
+                selected: isSelected,
+                onSelected: (value) => setState(() => _selectedFilter = filter),
+                backgroundColor: const Color(0xFF1c2433),
+                selectedColor: const Color(0xFF0d59f2),
+                side: BorderSide(color: isSelected ? const Color(0xFF0d59f2) : Colors.grey[700]!, width: 1),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
-              selected: isSelected,
-              onSelected: (value) => setState(() => _selectedFilter = filter),
-              backgroundColor: const Color(0xFF1c2433),
-              selectedColor: const Color(0xFF0d59f2),
-              side: BorderSide(color: isSelected ? const Color(0xFF0d59f2) : Colors.grey[700]!, width: 1),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             ),
           );
         },
@@ -617,32 +626,34 @@ class _SquadManagementContentState extends State<SquadManagementContent> {
 
   Widget _buildDraggablePlayerItem(Player player, bool isCompact) {
     final positionColor = _getPositionColor(player.position);
-    return LongPressDraggable<Player>(
-      data: player,
-      dragAnchorStrategy: pointerDragAnchorStrategy,
-      onDragStarted: () => setState(() => _isDragging = true),
-      onDragUpdate: (details) {
-        _lastDragPosition = details.globalPosition;
-        final renderBox = context.findRenderObject() as RenderBox?;
-        if (renderBox != null) {
-          final localPosition = renderBox.globalToLocal(details.globalPosition);
-          const scrollThreshold = 50.0;
-          if (localPosition.dy < scrollThreshold || localPosition.dy > renderBox.size.height - scrollThreshold) {
-            _startAutoScroll(details, context);
+    return MouseRegion(
+      cursor: SystemMouseCursors.grab,
+      child: LongPressDraggable<Player>(
+        data: player,
+        dragAnchorStrategy: pointerDragAnchorStrategy,
+        onDragStarted: () => setState(() => _isDragging = true),
+        onDragUpdate: (details) {
+          _lastDragPosition = details.globalPosition;
+          final renderBox = context.findRenderObject() as RenderBox?;
+          if (renderBox != null) {
+            final localPosition = renderBox.globalToLocal(details.globalPosition);
+            const scrollThreshold = 50.0;
+            if (localPosition.dy < scrollThreshold || localPosition.dy > renderBox.size.height - scrollThreshold) {
+              _startAutoScroll(details, context);
+            }
           }
-        }
-      },
-      onDragEnd: (details) {
-        setState(() => _isDragging = false);
-        _scrollTimer?.cancel();
-        _scrollTimer = null;
-      },
-      onDraggableCanceled: (velocity, offset) {
-        setState(() => _isDragging = false);
-        _scrollTimer?.cancel();
-        _scrollTimer = null;
-      },
-      feedback: Material(
+        },
+        onDragEnd: (details) {
+          setState(() => _isDragging = false);
+          _scrollTimer?.cancel();
+          _scrollTimer = null;
+        },
+        onDraggableCanceled: (velocity, offset) {
+          setState(() => _isDragging = false);
+          _scrollTimer?.cancel();
+          _scrollTimer = null;
+        },
+        feedback: Material(
         elevation: 8,
         borderRadius: BorderRadius.circular(12),
         child: Container(
@@ -661,7 +672,7 @@ class _SquadManagementContentState extends State<SquadManagementContent> {
       ),
       childWhenDragging: Opacity(opacity: 0.3, child: _buildPlayerItem(player)),
       child: _buildPlayerItem(player),
-    );
+    ));
   }
 
   Widget _buildPlayerItem(Player player) {
@@ -744,17 +755,20 @@ class _SquadManagementContentState extends State<SquadManagementContent> {
           ),
           const SizedBox(width: 12),
           if (!player.isSuggested)
-            GestureDetector(
-              onTap: () => _toggleTransferListed(player),
-              child: Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _transferListedPlayers.contains(player.name) ? const Color(0xFFef4444).withOpacity(0.2) : Colors.transparent,
-                  border: Border.all(color: _transferListedPlayers.contains(player.name) ? const Color(0xFFef4444) : Colors.grey[700]!, width: 1),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () => _toggleTransferListed(player),
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _transferListedPlayers.contains(player.name) ? const Color(0xFFef4444).withOpacity(0.2) : Colors.transparent,
+                    border: Border.all(color: _transferListedPlayers.contains(player.name) ? const Color(0xFFef4444) : Colors.grey[700]!, width: 1),
+                  ),
+                  child: Icon(_transferListedPlayers.contains(player.name) ? Icons.sell : Icons.sell_outlined, color: _transferListedPlayers.contains(player.name) ? const Color(0xFFef4444) : Colors.grey[600], size: 14),
                 ),
-                child: Icon(_transferListedPlayers.contains(player.name) ? Icons.sell : Icons.sell_outlined, color: _transferListedPlayers.contains(player.name) ? const Color(0xFFef4444) : Colors.grey[600], size: 14),
               ),
             ),
           if (!player.isSuggested) const SizedBox(width: 8),
@@ -1892,18 +1906,20 @@ class _SquadManagementScreenState extends State<SquadManagementScreen> {
   Widget _buildDraggablePlayerItem(Player player, bool isCompact) {
     final positionColor = _getPositionColor(player.position);
 
-    return LongPressDraggable<Player>(
-      data: player,
-      dragAnchorStrategy: pointerDragAnchorStrategy,
-      onDragStarted: () {
-        setState(() {
-          _isDragging = true;
-        });
-      },
-      onDragUpdate: (details) {
-        _lastDragPosition = details.globalPosition;
+    return MouseRegion(
+      cursor: SystemMouseCursors.grab,
+      child: LongPressDraggable<Player>(
+        data: player,
+        dragAnchorStrategy: pointerDragAnchorStrategy,
+        onDragStarted: () {
+          setState(() {
+            _isDragging = true;
+          });
+        },
+        onDragUpdate: (details) {
+          _lastDragPosition = details.globalPosition;
 
-        // Start auto-scroll check when near edges
+          // Start auto-scroll check when near edges
         final context = _scaffoldKey.currentContext;
         if (context != null) {
           final renderBox = context.findRenderObject() as RenderBox?;
@@ -1980,6 +1996,7 @@ class _SquadManagementScreenState extends State<SquadManagementScreen> {
       child: isCompact
           ? _buildCompactPlayerCard(player, positionColor)
           : _buildPlayerItem(player),
+      ),
     );
   }
 
@@ -2263,31 +2280,34 @@ class _SquadManagementScreenState extends State<SquadManagementScreen> {
           const SizedBox(width: 12),
           // Transfer List Toggle (only for squad players, not suggested)
           if (!player.isSuggested)
-            GestureDetector(
-              onTap: () => _toggleTransferListed(player),
-              child: Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _transferListedPlayers.contains(player.name)
-                      ? const Color(0xFFef4444).withOpacity(0.2)
-                      : Colors.transparent,
-                  border: Border.all(
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () => _toggleTransferListed(player),
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
                     color: _transferListedPlayers.contains(player.name)
-                        ? const Color(0xFFef4444)
-                        : Colors.grey[700]!,
-                    width: 1,
+                        ? const Color(0xFFef4444).withOpacity(0.2)
+                        : Colors.transparent,
+                    border: Border.all(
+                      color: _transferListedPlayers.contains(player.name)
+                          ? const Color(0xFFef4444)
+                          : Colors.grey[700]!,
+                      width: 1,
+                    ),
                   ),
-                ),
-                child: Icon(
-                  _transferListedPlayers.contains(player.name)
+                  child: Icon(
+                    _transferListedPlayers.contains(player.name)
                       ? Icons.sell
                       : Icons.sell_outlined,
-                  color: _transferListedPlayers.contains(player.name)
+                    color: _transferListedPlayers.contains(player.name)
                       ? const Color(0xFFef4444)
                       : Colors.grey[600],
-                  size: 14,
+                    size: 14,
+                  ),
                 ),
               ),
             ),
