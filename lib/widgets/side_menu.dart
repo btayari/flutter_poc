@@ -5,6 +5,9 @@ class SideMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get current route to determine active menu item
+    final currentRoute = ModalRoute.of(context)?.settings.name ?? '/tactical';
+
     return Container(
       width: 280,
       decoration: BoxDecoration(
@@ -22,7 +25,7 @@ class SideMenu extends StatelessWidget {
 
           // Navigation Menu
           Expanded(
-            child: _buildNavigationMenu(context),
+            child: _buildNavigationMenu(context, currentRoute),
           ),
 
           // Footer
@@ -141,7 +144,11 @@ class SideMenu extends StatelessWidget {
     );
   }
 
-  Widget _buildNavigationMenu(BuildContext context) {
+  Widget _buildNavigationMenu(BuildContext context, String currentRoute) {
+    // Determine if we're on squad management screen
+    final isSquadManagement = currentRoute == '/squad';
+    final isTactical = currentRoute == '/tactical' || currentRoute == '/';
+
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
@@ -154,8 +161,12 @@ class SideMenu extends StatelessWidget {
         _buildMenuItem(
           icon: Icons.assessment_rounded,
           label: 'Prediction',
-          isActive: true,
-          onTap: () {},
+          isActive: isTactical,
+          onTap: () {
+            if (!isTactical) {
+              Navigator.pushReplacementNamed(context, '/tactical');
+            }
+          },
         ),
         _buildMenuItem(
           icon: Icons.swap_horiz_rounded,
@@ -187,9 +198,11 @@ class SideMenu extends StatelessWidget {
         _buildMenuItem(
           icon: Icons.people_rounded,
           label: 'Squad Management',
-          isActive: false,
+          isActive: isSquadManagement,
           onTap: () {
-            Navigator.pushNamed(context, '/squad');
+            if (!isSquadManagement) {
+              Navigator.pushReplacementNamed(context, '/squad');
+            }
           },
         ),
         _buildMenuItem(

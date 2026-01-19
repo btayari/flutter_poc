@@ -180,15 +180,366 @@ class _SquadManagementScreenState extends State<SquadManagementScreen> {
       children: [
         // Left Side Menu
         const SideMenu(),
-        // Main Content
+        // Main Content - Two Column Layout
         Expanded(
           child: Column(
             children: [
               _buildWebTopBar(),
-              _buildTeamHeader(),
-              _buildFilterChips(),
               Expanded(
-                child: _buildPlayersList(),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Left Column - Squad Players
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        children: [
+                          _buildTeamHeader(),
+                          _buildFilterChips(),
+                          Expanded(
+                            child: _buildWebSquadList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Divider
+                    Container(
+                      width: 1,
+                      color: Colors.grey[800],
+                    ),
+                    // Right Column - Suggested Players & Stats
+                    Expanded(
+                      flex: 2,
+                      child: _buildWebRightPanel(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWebSquadList() {
+    final groupedPlayers = _playersByPosition;
+    final orderedPositions = [
+      PlayerPosition.goalkeeper,
+      PlayerPosition.defender,
+      PlayerPosition.midfielder,
+      PlayerPosition.forward,
+    ];
+
+    return RawScrollbar(
+      controller: _scrollController,
+      thumbVisibility: true,
+      thickness: 6,
+      radius: const Radius.circular(3),
+      child: ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.only(bottom: 24),
+        itemCount: orderedPositions.length,
+        itemBuilder: (context, index) {
+          final position = orderedPositions[index];
+          final players = groupedPlayers[position] ?? [];
+          if (players.isEmpty) return const SizedBox.shrink();
+          return _buildPositionSection(position, players);
+        },
+      ),
+    );
+  }
+
+  Widget _buildWebRightPanel() {
+    return Container(
+      color: const Color(0xFF0d1117),
+      child: Column(
+        children: [
+          // Squad Stats Header
+          _buildWebSquadStats(),
+          // Suggested Players Section
+          Expanded(
+            child: _buildWebSuggestedPlayersPanel(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWebSquadStats() {
+    final totalPlayers = _squadPlayers.length;
+    final avgRating = _squadPlayers.isNotEmpty
+        ? _squadPlayers.map((p) => p.rating).reduce((a, b) => a + b) / totalPlayers
+        : 0.0;
+    final avgAge = _squadPlayers.isNotEmpty
+        ? _squadPlayers.map((p) => p.age).reduce((a, b) => a + b) / totalPlayers
+        : 0.0;
+    final transferListedCount = _transferListedPlayers.length;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1c2433),
+        border: Border(
+          bottom: BorderSide(color: Colors.grey[800]!),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'SQUAD OVERVIEW',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _buildStatCard(
+                'Total',
+                '$totalPlayers',
+                Icons.groups,
+                const Color(0xFF0d59f2),
+              ),
+              const SizedBox(width: 12),
+              _buildStatCard(
+                'Avg Rating',
+                avgRating.toStringAsFixed(1),
+                Icons.star,
+                const Color(0xFF22c55e),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              _buildStatCard(
+                'Avg Age',
+                avgAge.toStringAsFixed(1),
+                Icons.cake,
+                const Color(0xFFeab308),
+              ),
+              const SizedBox(width: 12),
+              _buildStatCard(
+                'Listed',
+                '$transferListedCount',
+                Icons.sell,
+                const Color(0xFFef4444),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: color.withOpacity(0.3),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                color: color,
+                size: 18,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    value,
+                    style: TextStyle(
+                      color: color,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 11,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWebSuggestedPlayersPanel() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.grey[800]!),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFc41e3a).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.star_rounded,
+                  color: Color(0xFFc41e3a),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'SUGGESTED',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'From Liverpool FC',
+                      style: TextStyle(
+                        color: Colors.grey[400],
+                        fontSize: 11,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFc41e3a).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '${_suggestedPlayers.length}',
+                  style: const TextStyle(
+                    color: Color(0xFFc41e3a),
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Suggested Players List
+        Expanded(
+          child: DragTarget<Player>(
+            onWillAcceptWithDetails: (details) {
+              return !details.data.isSuggested;
+            },
+            onAcceptWithDetails: (details) {
+              _movePlayerToSuggested(details.data);
+            },
+            builder: (context, candidateData, rejectedData) {
+              final isHighlighted = candidateData.isNotEmpty;
+
+              return Container(
+                decoration: BoxDecoration(
+                  color: isHighlighted
+                      ? const Color(0xFFc41e3a).withOpacity(0.05)
+                      : Colors.transparent,
+                  border: isHighlighted
+                      ? Border.all(color: const Color(0xFFc41e3a), width: 2)
+                      : null,
+                ),
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  itemCount: _suggestedPlayers.length,
+                  itemBuilder: (context, index) {
+                    return _buildDraggablePlayerItem(_suggestedPlayers[index], false);
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+        // Quick Actions
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1c2433),
+            border: Border(
+              top: BorderSide(color: Colors.grey[800]!),
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.search, size: 16),
+                  label: const Text('Scout', overflow: TextOverflow.ellipsis),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0d59f2),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.filter_list, size: 16),
+                  label: const Text('Filter', overflow: TextOverflow.ellipsis),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.grey[400],
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                    side: BorderSide(color: Colors.grey[700]!),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -474,7 +825,7 @@ class _SquadManagementScreenState extends State<SquadManagementScreen> {
                     filter,
                     style: TextStyle(
                       color: isSelected ? Colors.white : Colors.grey[400],
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     ),
                   ),
