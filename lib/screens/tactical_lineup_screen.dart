@@ -31,6 +31,67 @@ class _TacticalLineupContentState extends State<TacticalLineupContent> {
         // Team & Controls Header
         _buildTeamHeader(),
 
+        // Formation Selector
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              FormationSelector(
+                formations: DataProvider.formations,
+                selectedFormation: _selectedFormation,
+                onFormationChanged: (String formation) {
+                  setState(() {
+                    _selectedFormation = formation;
+                  });
+                },
+                isWebLayout: false,
+              ),
+              const SizedBox(width: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0d59f2).withOpacity(0.15),
+                  border: Border.all(
+                    color: const Color(0xFF0d59f2).withOpacity(0.3),
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {},
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 18,
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.auto_awesome,
+                            size: 20,
+                            color: Color(0xFF0d59f2),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Auto',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF0d59f2),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
         // Tactical Pitch View
         Expanded(
           child: Padding(
@@ -241,6 +302,48 @@ class _TacticalLineupContentState extends State<TacticalLineupContent> {
               ),
             ),
           ),
+          // Make Prediction Button at the bottom
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Colors.grey[800]!),
+              ),
+            ),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0d59f2),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 8,
+                    shadowColor: const Color(0xFF0d59f2).withOpacity(0.4),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Make Prediction',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Icon(Icons.arrow_forward, size: 24),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -303,14 +406,23 @@ class _TacticalLineupContentState extends State<TacticalLineupContent> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
+                elevation: 8,
+                shadowColor: const Color(0xFF0d59f2).withOpacity(0.4),
               ),
-              child: const Text(
-                'Save Lineup',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Make Prediction',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                ],
               ),
             ),
           ),

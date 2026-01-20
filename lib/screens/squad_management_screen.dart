@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 import '../models/player.dart';
 import '../data/data_provider.dart';
 import '../widgets/side_menu.dart';
@@ -17,8 +16,6 @@ class _SquadManagementContentState extends State<SquadManagementContent> {
 
   final ScrollController _scrollController = ScrollController();
   bool _isDragging = false;
-  Offset _lastDragPosition = Offset.zero;
-  Timer? _scrollTimer;
 
   late List<Player> _squadPlayers;
   late List<Player> _suggestedPlayers;
@@ -34,7 +31,6 @@ class _SquadManagementContentState extends State<SquadManagementContent> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _scrollTimer?.cancel();
     super.dispose();
   }
 
@@ -68,25 +64,28 @@ class _SquadManagementContentState extends State<SquadManagementContent> {
     });
   }
 
-  void _startAutoScroll(DragUpdateDetails details, BuildContext context) {
-    _lastDragPosition = details.globalPosition;
-    if (_scrollTimer != null && _scrollTimer!.isActive) return;
+  // Smooth scroll up when dragging near top
+  void _scrollUp() {
+    if (_scrollController.hasClients && _scrollController.offset > 0) {
+      final targetOffset = (_scrollController.offset - 150).clamp(0.0, _scrollController.position.maxScrollExtent);
+      _scrollController.animateTo(
+        targetOffset,
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 300),
+      );
+    }
+  }
 
-    _scrollTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
-      if (!_isDragging) {
-        timer.cancel();
-        return;
-      }
-      final renderBox = context.findRenderObject() as RenderBox?;
-      if (renderBox == null) return;
-      final localPosition = renderBox.globalToLocal(_lastDragPosition);
-      const scrollThreshold = 50.0;
-      if (localPosition.dy < scrollThreshold) {
-        _scrollController.jumpTo(_scrollController.offset - 20);
-      } else if (localPosition.dy > renderBox.size.height - scrollThreshold) {
-        _scrollController.jumpTo(_scrollController.offset + 20);
-      }
-    });
+  // Smooth scroll down when dragging near bottom
+  void _scrollDown() {
+    if (_scrollController.hasClients) {
+      final targetOffset = (_scrollController.offset + 150).clamp(0.0, _scrollController.position.maxScrollExtent);
+      _scrollController.animateTo(
+        targetOffset,
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 300),
+      );
+    }
   }
 
   List<Player> get _filteredPlayers => _squadPlayers;
@@ -501,26 +500,81 @@ class _SquadManagementContentState extends State<SquadManagementContent> {
   Widget _buildPlayersList() {
     final groupedPlayers = _playersByPosition;
     final orderedPositions = [PlayerPosition.goalkeeper, PlayerPosition.defender, PlayerPosition.midfielder, PlayerPosition.forward];
-    return RawScrollbar(
-      controller: _scrollController,
-      thumbVisibility: true,
-      thickness: 6,
-      radius: const Radius.circular(3),
-      child: ListView.builder(
-        controller: _scrollController,
-        padding: const EdgeInsets.only(bottom: 80),
-        itemCount: orderedPositions.length + (_suggestedPlayers.isNotEmpty ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index < orderedPositions.length) {
-            final position = orderedPositions[index];
-            final players = groupedPlayers[position] ?? [];
-            if (players.isEmpty) return const SizedBox.shrink();
-            return _buildPositionSection(position, players);
-          } else {
-            return Column(children: [const SizedBox(height: 24), _buildSuggestedPlayersSection()]);
-          }
-        },
-      ),
+
+    return Stack(
+      children: [
+        RawScrollbar(
+          controller: _scrollController,
+          thumbVisibility: true,
+          thickness: 6,
+          radius: const Radius.circular(3),
+          child: ListView.builder(
+            controller: _scrollController,
+            padding: const EdgeInsets.only(bottom: 80),
+            itemCount: orderedPositions.length + (_suggestedPlayers.isNotEmpty ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index < orderedPositions.length) {
+                final position = orderedPositions[index];
+                final players = groupedPlayers[position] ?? [];
+                if (players.isEmpty) return const SizedBox.shrink();
+                return _buildPositionSection(position, players);
+              } else {
+                return Column(children: [const SizedBox(height: 24), _buildSuggestedPlayersSection()]);
+              }
+            },
+          ),
+        ),
+        // Top scroll zone
+        if (_isDragging)
+          Align(
+            alignment: Alignment.topCenter,
+            child: DragTarget<Player>(
+              builder: (context, accepted, rejected) => Container(
+                height: 80,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.blue.withOpacity(0.1),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+              onWillAcceptWithDetails: (details) {
+                _scrollUp();
+                return false;
+              },
+            ),
+          ),
+        // Bottom scroll zone
+        if (_isDragging)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: DragTarget<Player>(
+              builder: (context, accepted, rejected) => Container(
+                height: 80,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      Colors.blue.withOpacity(0.1),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+              onWillAcceptWithDetails: (details) {
+                _scrollDown();
+                return false;
+              },
+            ),
+          ),
+      ],
     );
   }
 
@@ -631,27 +685,20 @@ class _SquadManagementContentState extends State<SquadManagementContent> {
       child: LongPressDraggable<Player>(
         data: player,
         dragAnchorStrategy: pointerDragAnchorStrategy,
-        onDragStarted: () => setState(() => _isDragging = true),
-        onDragUpdate: (details) {
-          _lastDragPosition = details.globalPosition;
-          final renderBox = context.findRenderObject() as RenderBox?;
-          if (renderBox != null) {
-            final localPosition = renderBox.globalToLocal(details.globalPosition);
-            const scrollThreshold = 50.0;
-            if (localPosition.dy < scrollThreshold || localPosition.dy > renderBox.size.height - scrollThreshold) {
-              _startAutoScroll(details, context);
-            }
-          }
+        onDragStarted: () {
+          setState(() {
+            _isDragging = true;
+          });
         },
         onDragEnd: (details) {
-          setState(() => _isDragging = false);
-          _scrollTimer?.cancel();
-          _scrollTimer = null;
+          setState(() {
+            _isDragging = false;
+          });
         },
         onDraggableCanceled: (velocity, offset) {
-          setState(() => _isDragging = false);
-          _scrollTimer?.cancel();
-          _scrollTimer = null;
+          setState(() {
+            _isDragging = false;
+          });
         },
         feedback: Material(
         elevation: 8,
@@ -814,8 +861,6 @@ class _SquadManagementScreenState extends State<SquadManagementScreen> {
 
   // Add drag position tracking
   bool _isDragging = false;
-  Offset _lastDragPosition = Offset.zero;
-  Timer? _scrollTimer;
 
   // Mutable lists for drag and drop
   late List<Player> _squadPlayers;
@@ -834,8 +879,31 @@ class _SquadManagementScreenState extends State<SquadManagementScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _scrollTimer?.cancel();
     super.dispose();
+  }
+
+  // Smooth scroll up when dragging near top
+  void _scrollUp() {
+    if (_scrollController.hasClients && _scrollController.offset > 0) {
+      final targetOffset = (_scrollController.offset - 150).clamp(0.0, _scrollController.position.maxScrollExtent);
+      _scrollController.animateTo(
+        targetOffset,
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 300),
+      );
+    }
+  }
+
+  // Smooth scroll down when dragging near bottom
+  void _scrollDown() {
+    if (_scrollController.hasClients) {
+      final targetOffset = (_scrollController.offset + 150).clamp(0.0, _scrollController.position.maxScrollExtent);
+      _scrollController.animateTo(
+        targetOffset,
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 300),
+      );
+    }
   }
 
   // Sort players based on selected filter
@@ -872,44 +940,6 @@ class _SquadManagementScreenState extends State<SquadManagementScreen> {
       }
     });
   }
-
-  // Method to handle auto-scrolling during drag
-  void _startAutoScroll(DragUpdateDetails details, BuildContext context) {
-    _lastDragPosition = details.globalPosition;
-
-    if (_scrollTimer != null && _scrollTimer!.isActive) {
-      return;
-    }
-
-    _scrollTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
-      if (!_isDragging) {
-        timer.cancel();
-        return;
-      }
-
-      final renderBox = context.findRenderObject() as RenderBox?;
-      if (renderBox == null) return;
-
-      final localPosition = renderBox.globalToLocal(_lastDragPosition);
-      final scrollThreshold = 50.0;
-
-      // Check if we're near the top
-      if (localPosition.dy < scrollThreshold) {
-        // Scroll up
-        _scrollController.jumpTo(
-          _scrollController.offset - 20,
-        );
-      }
-      // Check if we're near the bottom
-      else if (localPosition.dy > renderBox.size.height - scrollThreshold) {
-        // Scroll down
-        _scrollController.jumpTo(
-          _scrollController.offset + 20,
-        );
-      }
-    });
-  }
-
 
   List<Player> get _filteredPlayers {
     return _squadPlayers;
@@ -1663,31 +1693,85 @@ class _SquadManagementScreenState extends State<SquadManagementScreen> {
       PlayerPosition.forward,
     ];
 
-    return RawScrollbar(
-      controller: _scrollController,
-      thumbVisibility: true,
-      thickness: 6,
-      radius: const Radius.circular(3),
-      child: ListView.builder(
-        controller: _scrollController,
-        padding: const EdgeInsets.only(bottom: 80),
-        itemCount: orderedPositions.length + (_suggestedPlayers.isNotEmpty ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index < orderedPositions.length) {
-            final position = orderedPositions[index];
-            final players = groupedPlayers[position] ?? [];
-            if (players.isEmpty) return const SizedBox.shrink();
-            return _buildPositionSection(position, players);
-          } else {
-            return Column(
-              children: [
-                const SizedBox(height: 24),
-                _buildSuggestedPlayersSection(),
-              ],
-            );
-          }
-        },
-      ),
+    return Stack(
+      children: [
+        RawScrollbar(
+          controller: _scrollController,
+          thumbVisibility: true,
+          thickness: 6,
+          radius: const Radius.circular(3),
+          child: ListView.builder(
+            controller: _scrollController,
+            padding: const EdgeInsets.only(bottom: 80),
+            itemCount: orderedPositions.length + (_suggestedPlayers.isNotEmpty ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index < orderedPositions.length) {
+                final position = orderedPositions[index];
+                final players = groupedPlayers[position] ?? [];
+                if (players.isEmpty) return const SizedBox.shrink();
+                return _buildPositionSection(position, players);
+              } else {
+                return Column(
+                  children: [
+                    const SizedBox(height: 24),
+                    _buildSuggestedPlayersSection(),
+                  ],
+                );
+              }
+            },
+          ),
+        ),
+        // Top scroll zone
+        if (_isDragging)
+          Align(
+            alignment: Alignment.topCenter,
+            child: DragTarget<Player>(
+              builder: (context, accepted, rejected) => Container(
+                height: 80,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.blue.withOpacity(0.1),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+              onWillAcceptWithDetails: (details) {
+                _scrollUp();
+                return false;
+              },
+            ),
+          ),
+        // Bottom scroll zone
+        if (_isDragging)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: DragTarget<Player>(
+              builder: (context, accepted, rejected) => Container(
+                height: 80,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      Colors.blue.withOpacity(0.1),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+              onWillAcceptWithDetails: (details) {
+                _scrollDown();
+                return false;
+              },
+            ),
+          ),
+      ],
     );
   }
 
@@ -1916,39 +2000,17 @@ class _SquadManagementScreenState extends State<SquadManagementScreen> {
             _isDragging = true;
           });
         },
-        onDragUpdate: (details) {
-          _lastDragPosition = details.globalPosition;
-
-          // Start auto-scroll check when near edges
-        final context = _scaffoldKey.currentContext;
-        if (context != null) {
-          final renderBox = context.findRenderObject() as RenderBox?;
-          if (renderBox != null) {
-            final localPosition = renderBox.globalToLocal(details.globalPosition);
-            const scrollThreshold = 50.0;
-
-            if (localPosition.dy < scrollThreshold ||
-                localPosition.dy > renderBox.size.height - scrollThreshold) {
-              _startAutoScroll(details, context);
-            }
-          }
-        }
-      },
-      onDragEnd: (details) {
-        setState(() {
-          _isDragging = false;
-        });
-        _scrollTimer?.cancel();
-        _scrollTimer = null;
-      },
-      onDraggableCanceled: (velocity, offset) {
-        setState(() {
-          _isDragging = false;
-        });
-        _scrollTimer?.cancel();
-        _scrollTimer = null;
-      },
-      feedback: Material(
+        onDragEnd: (details) {
+          setState(() {
+            _isDragging = false;
+          });
+        },
+        onDraggableCanceled: (velocity, offset) {
+          setState(() {
+            _isDragging = false;
+          });
+        },
+        feedback: Material(
         elevation: 8,
         borderRadius: BorderRadius.circular(12),
         child: Container(
