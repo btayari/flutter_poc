@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/match_prediction.dart';
 import '../data/match_prediction_data.dart';
+import '../widgets/side_menu.dart';
 
 class MatchPredictionScreen extends StatelessWidget {
   const MatchPredictionScreen({super.key});
@@ -14,8 +15,29 @@ class MatchPredictionScreen extends StatelessWidget {
     return '$month $day, $hour:$minute';
   }
 
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWebLayout = screenWidth > 900;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF101622),
+      drawer: isWebLayout ? null : _buildDrawer(),
+      body: SafeArea(
+        child: isWebLayout ? _buildWebLayout(context) : _buildMobileLayout(context),
+      ),
+    );
+  }
+
+  Widget _buildDrawer() {
+    return const Drawer(
+      backgroundColor: Color(0xFF0d1117),
+      child: SideMenu(),
+    );
+  }
+
+  Widget _buildMobileLayout(BuildContext context) {
     final prediction = MatchPredictionData.getSamplePrediction();
 
     return Scaffold(
@@ -84,6 +106,143 @@ class MatchPredictionScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildWebLayout(BuildContext context) {
+    final prediction = MatchPredictionData.getSamplePrediction();
+
+    return Row(
+      children: [
+        // Side Menu
+        const SizedBox(
+          width: 250,
+          child: SideMenu(),
+        ),
+
+        // Main Content
+        Expanded(
+          child: Column(
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF101622),
+                  border: Border(
+                    bottom: BorderSide(color: Color(0xFF374151)),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.chevron_left, color: Color(0xFF0d59f2), size: 28),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: const Text(
+                        'Edit Lineup',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF0d59f2),
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    const Text(
+                      'Match Prediction',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    // Action Buttons
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Compare Scenarios - Coming Soon')),
+                        );
+                      },
+                      icon: const Icon(Icons.compare_arrows, size: 18),
+                      label: const Text('Compare Scenarios'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: const BorderSide(color: Color(0xFF374151)),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Export Report - Coming Soon')),
+                        );
+                      },
+                      icon: const Icon(Icons.download, size: 18),
+                      label: const Text('Export Report'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0d59f2),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        elevation: 0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(32),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1200),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Match Header
+                          _buildWebMatchHeader(prediction),
+                          const SizedBox(height: 32),
+
+                          // Main Content Grid
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Left Column - Win Probability
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  children: [
+                                    _buildWinProbabilitySection(prediction),
+                                    const SizedBox(height: 24),
+                                    _buildTacticalInsight(prediction),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 24),
+
+                              // Right Column - Predicted Stats
+                              Expanded(
+                                flex: 3,
+                                child: _buildPredictedStatsSection(prediction),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildMatchHeader(MatchPrediction prediction) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -100,7 +259,7 @@ class MatchPredictionScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(32),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.white.withValues(alpha: 0.1),
+                      color: Colors.white.withOpacity(0.1),
                       blurRadius: 8,
                       spreadRadius: 1,
                     ),
@@ -160,7 +319,7 @@ class MatchPredictionScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1e293b),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                  border: Border.all(color: Colors.white.withOpacity(0.05)),
                 ),
                 child: Text(
                   prediction.venue,
@@ -186,7 +345,7 @@ class MatchPredictionScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(32),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.white.withValues(alpha: 0.1),
+                      color: Colors.white.withOpacity(0.1),
                       blurRadius: 8,
                       spreadRadius: 1,
                     ),
@@ -222,6 +381,191 @@ class MatchPredictionScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildWebMatchHeader(MatchPrediction prediction) {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1e293b),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF374151)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          // Home Team
+          Expanded(
+            child: Column(
+              children: [
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF101622),
+                    borderRadius: BorderRadius.circular(50),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withOpacity(0.1),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Image.network(
+                      prediction.homeTeamLogo,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: const Color(0xFF101622),
+                          child: const Icon(Icons.shield, color: Colors.white54, size: 48),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  prediction.homeTeam,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+
+          // Match Info
+          Expanded(
+            flex: 2,
+            child: Column(
+              children: [
+                const Text(
+                  'VS',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF9ca3af),
+                    letterSpacing: 2.0,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  _formatMatchDate(prediction.matchDate),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF9ca3af),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF101622),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.white.withOpacity(0.1)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.stadium,
+                        size: 16,
+                        color: Color(0xFF9ca3af),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        prediction.venue,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF9ca3af),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF10b981).withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.verified,
+                        size: 16,
+                        color: Color(0xFF10b981),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        prediction.confidenceLevel,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF10b981),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Away Team
+          Expanded(
+            child: Column(
+              children: [
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF101622),
+                    borderRadius: BorderRadius.circular(50),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withOpacity(0.1),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Image.network(
+                      prediction.awayTeamLogo,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: const Color(0xFF101622),
+                          child: const Icon(Icons.shield, color: Colors.white54, size: 48),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  prediction.awayTeam,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildWinProbabilitySection(MatchPrediction prediction) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -249,15 +593,15 @@ class MatchPredictionScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF10b981).withValues(alpha: 0.1),
+                  color: const Color(0xFF10b981).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.verified,
                       size: 14,
-                      color: const Color(0xFF10b981),
+                      color: Color(0xFF10b981),
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -414,7 +758,7 @@ class MatchPredictionScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF374151).withValues(alpha: 0.5),
+                  color: const Color(0xFF374151).withOpacity(0.5),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(12),
                     topRight: Radius.circular(12),
@@ -489,7 +833,7 @@ class MatchPredictionScreen extends StatelessWidget {
     final bool homeAdvantage = homeValue > awayValue;
     final bool awayAdvantage = awayValue > homeValue;
 
-    // Calculate bar widths (simplified approach)
+    // Calculate bar widths
     final total = (homeValue is num && awayValue is num)
         ? homeValue + awayValue
         : 100;
@@ -502,7 +846,7 @@ class MatchPredictionScreen extends StatelessWidget {
         border: Border(
           bottom: isLast
               ? BorderSide.none
-              : BorderSide(color: const Color(0xFF374151)),
+              : const BorderSide(color: Color(0xFF374151)),
         ),
       ),
       child: Stack(
@@ -512,13 +856,13 @@ class MatchPredictionScreen extends StatelessWidget {
             left: 0,
             bottom: 0,
             child: Container(
-              width: homeWidth * 6, // Scale for visual effect
+              width: homeWidth * 6,
               height: 4,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: homeAdvantage
-                      ? [const Color(0xFF0d59f2).withValues(alpha: 0.2), Colors.transparent]
-                      : [Colors.white.withValues(alpha: 0.05), Colors.transparent],
+                      ? [const Color(0xFF0d59f2).withOpacity(0.2), Colors.transparent]
+                      : [Colors.white.withOpacity(0.05), Colors.transparent],
                 ),
               ),
             ),
@@ -527,13 +871,13 @@ class MatchPredictionScreen extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Container(
-              width: (100 - homeWidth) * 6, // Scale for visual effect
+              width: (100 - homeWidth) * 6,
               height: 4,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: awayAdvantage
-                      ? [Colors.transparent, const Color(0xFF38bdf8).withValues(alpha: 0.2)]
-                      : [Colors.transparent, Colors.white.withValues(alpha: 0.05)],
+                      ? [Colors.transparent, const Color(0xFF38bdf8).withOpacity(0.2)]
+                      : [Colors.transparent, Colors.white.withOpacity(0.05)],
                 ),
               ),
             ),
@@ -600,7 +944,6 @@ class MatchPredictionScreen extends StatelessWidget {
     if (value is int) {
       return value.toString();
     } else if (value is double) {
-      // Check if it's a percentage-like value or a decimal
       if (value >= 10) {
         return '${value.round()}%';
       } else {
@@ -614,9 +957,9 @@ class MatchPredictionScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF0d59f2).withValues(alpha: 0.1),
+        color: const Color(0xFF0d59f2).withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF0d59f2).withValues(alpha: 0.2)),
+        border: Border.all(color: const Color(0xFF0d59f2).withOpacity(0.2)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -671,7 +1014,6 @@ class MatchPredictionScreen extends StatelessWidget {
             Expanded(
               child: OutlinedButton(
                 onPressed: () {
-                  // TODO: Implement compare scenarios
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Compare Scenarios - Coming Soon')),
                   );
@@ -698,7 +1040,6 @@ class MatchPredictionScreen extends StatelessWidget {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Implement export report
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Export Report - Coming Soon')),
                   );
@@ -710,7 +1051,7 @@ class MatchPredictionScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   elevation: 4,
-                  shadowColor: const Color(0xFF0d59f2).withValues(alpha: 0.25),
+                  shadowColor: const Color(0xFF0d59f2).withOpacity(0.25),
                 ),
                 child: const Text(
                   'Export Report',

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tactical_lineup_screen.dart';
 import 'squad_management_screen.dart';
-import 'match_prediction_screen.dart';
 
 class MainShellScreen extends StatefulWidget {
   final int initialIndex;
