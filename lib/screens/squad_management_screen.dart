@@ -67,7 +67,7 @@ class _SquadManagementContentState extends State<SquadManagementContent> {
   // Smooth scroll up when dragging near top
   void _scrollUp() {
     if (_scrollController.hasClients && _scrollController.offset > 0) {
-      final targetOffset = (_scrollController.offset - 150).clamp(0.0, _scrollController.position.maxScrollExtent);
+      final targetOffset = (_scrollController.offset - 500).clamp(0.0, _scrollController.position.maxScrollExtent);
       _scrollController.animateTo(
         targetOffset,
         curve: Curves.easeOut,
@@ -79,7 +79,7 @@ class _SquadManagementContentState extends State<SquadManagementContent> {
   // Smooth scroll down when dragging near bottom
   void _scrollDown() {
     if (_scrollController.hasClients) {
-      final targetOffset = (_scrollController.offset + 150).clamp(0.0, _scrollController.position.maxScrollExtent);
+      final targetOffset = (_scrollController.offset + 500).clamp(0.0, _scrollController.position.maxScrollExtent);
       _scrollController.animateTo(
         targetOffset,
         curve: Curves.easeOut,
