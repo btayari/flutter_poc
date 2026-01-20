@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'tactical_lineup_screen.dart';
 import 'squad_management_screen.dart';
+import 'match_prediction_screen.dart';
 
 class MainShellScreen extends StatefulWidget {
   final int initialIndex;
@@ -117,7 +118,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
           ),
           Expanded(
             child: Text(
-              _selectedIndex == 0 ? 'Match Prediction' : 'Squad Management',
+              _selectedIndex == 0 ? 'Tactical Lineup' : 'Squad Management',
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -177,7 +178,7 @@ class _SideMenuWithCallback extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: const Color(0xFF0d59f2), width: 3),
-              boxShadow: [BoxShadow(color: const Color(0xFF0d59f2).withOpacity(0.3), blurRadius: 12, spreadRadius: 2)],
+              boxShadow: [BoxShadow(color: const Color(0xFF0d59f2).withValues(alpha: 0.3), blurRadius: 12, spreadRadius: 2)],
             ),
             child: ClipOval(
               child: Container(
@@ -218,7 +219,7 @@ class _SideMenuWithCallback extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
         _buildMenuItem(icon: Icons.home_rounded, label: 'Home', index: -1, isActive: false),
-        _buildMenuItem(icon: Icons.assessment_rounded, label: 'Prediction', index: 0, isActive: selectedIndex == 0),
+        _buildMenuItem(icon: Icons.sports_soccer, label: 'Tactical Lineup', index: 0, isActive: selectedIndex == 0),
         _buildMenuItem(icon: Icons.swap_horiz_rounded, label: 'Transfers', index: -1, isActive: false),
         _buildMenuItem(icon: Icons.search_rounded, label: 'Scouting', index: -1, isActive: false),
         const SizedBox(height: 16),
@@ -246,9 +247,9 @@ class _SideMenuWithCallback extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFF0d59f2).withOpacity(0.15) : Colors.transparent,
+          color: isActive ? const Color(0xFF0d59f2).withValues(alpha: 0.15) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
-          border: isActive ? Border.all(color: const Color(0xFF0d59f2).withOpacity(0.3)) : null,
+          border: isActive ? Border.all(color: const Color(0xFF0d59f2).withValues(alpha: 0.3)) : null,
         ),
         child: Material(
           color: Colors.transparent,
@@ -285,7 +286,13 @@ class _SideMenuWithCallback extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(child: Text('Dark Mode', style: TextStyle(fontSize: 13, color: Colors.grey[400]))),
-          Switch(value: true, onChanged: (value) {}, activeColor: const Color(0xFF0d59f2), materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
+          Switch(
+            value: true,
+            onChanged: (value) {},
+            activeTrackColor: const Color(0xFF0d59f2).withValues(alpha: 0.5),
+            thumbColor: const WidgetStatePropertyAll(Color(0xFF0d59f2)),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
         ],
       ),
     );

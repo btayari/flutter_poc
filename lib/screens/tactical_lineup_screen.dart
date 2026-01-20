@@ -5,6 +5,7 @@ import '../widgets/players_list.dart';
 import '../widgets/team_stats.dart';
 import '../widgets/pitch_view.dart';
 import '../data/data_provider.dart';
+import 'match_prediction_screen.dart';
 
 // Content-only widget for use in MainShellScreen (without Scaffold and SideMenu)
 class TacticalLineupContent extends StatefulWidget {
@@ -316,7 +317,14 @@ class _TacticalLineupContentState extends State<TacticalLineupContent> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MatchPredictionScreen(),
+                      ),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0d59f2),
                     foregroundColor: Colors.white,
@@ -399,7 +407,14 @@ class _TacticalLineupContentState extends State<TacticalLineupContent> {
         children: [
           Expanded(
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MatchPredictionScreen(),
+                  ),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0d59f2),
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -708,7 +723,14 @@ class _TacticalLineupScreenState extends State<TacticalLineupScreen> {
           width: double.infinity,
           height: 56,
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MatchPredictionScreen(),
+                ),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0d59f2),
               foregroundColor: Colors.white,
@@ -955,7 +977,14 @@ class _TacticalLineupScreenState extends State<TacticalLineupScreen> {
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MatchPredictionScreen(),
+                  ),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0d59f2),
                 foregroundColor: Colors.white,

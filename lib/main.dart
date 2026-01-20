@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'screens/main_shell_screen.dart';
 import 'screens/tactical_lineup_screen.dart';
 import 'screens/squad_management_screen.dart';
+import 'screens/match_prediction_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/tactical': (context) => const TacticalLineupScreen(),
         '/squad': (context) => const SquadManagementScreen(),
+        '/prediction': (context) => const MatchPredictionScreen(),
       },
     );
   }
