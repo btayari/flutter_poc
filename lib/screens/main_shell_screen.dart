@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_poc/screens/transfers_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'home_screen.dart';
 import 'tactical_lineup_screen.dart';
@@ -38,6 +39,8 @@ class _MainShellScreenState extends State<MainShellScreen> {
         return const TacticalLineupContent();
       case 2:
         return const SquadManagementContent();
+      case 3:
+        return const TransfersScreen();
       default:
         return const HomeScreen();
     }
@@ -110,6 +113,9 @@ class _MainShellScreenState extends State<MainShellScreen> {
         break;
       case 2:
         title = 'Squad Management';
+        break;
+      case 3:
+        title = 'Transfers';
         break;
       default:
         title = 'Home';
@@ -250,7 +256,7 @@ class _SideMenuWithCallback extends StatelessWidget {
       children: [
         _buildMenuItem(icon: Icons.home_rounded, label: 'Home', index: 0, isActive: selectedIndex == 0),
         _buildMenuItem(icon: Icons.sports_soccer, label: 'Tactical Lineup', index: 1, isActive: selectedIndex == 1),
-        _buildMenuItem(icon: Icons.swap_horiz_rounded, label: 'Transfers', index: -1, isActive: false),
+        _buildMenuItem(icon: Icons.swap_horiz_rounded, label: 'Transfers', index: 3, isActive: selectedIndex == 3),
         _buildMenuItem(icon: Icons.search_rounded, label: 'Scouting', index: -1, isActive: false),
         const SizedBox(height: 16),
         Padding(
