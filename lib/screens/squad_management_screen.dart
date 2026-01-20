@@ -1649,7 +1649,7 @@ class _SquadManagementScreenState extends State<SquadManagementScreen> {
                     filter,
                     style: TextStyle(
                       color: isSelected ? Colors.white : Colors.grey[400],
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     ),
                   ),
