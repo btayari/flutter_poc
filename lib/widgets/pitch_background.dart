@@ -10,14 +10,6 @@ class PitchBackground extends StatelessWidget {
       height: double.infinity,
       decoration: BoxDecoration(
         color: const Color(0xFF1e3a28),
-        image: DecorationImage(
-          image: const AssetImage('assets/pitch_pattern.png'),
-          fit: BoxFit.cover,
-          opacity: 0.03,
-          onError: (error, stackTrace) {
-            // Fallback if image doesn't exist
-          },
-        ),
       ),
       child: CustomPaint(
         painter: PitchPainter(),
