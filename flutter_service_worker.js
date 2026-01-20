@@ -25,7 +25,7 @@ const RESOURCES = {"flutter.js": "24bc71911b75b5f8135c949e27a2984e",
 "assets/assets/players/ederson.jpg": "2684200752420aa8f9d38a77a07949f6",
 "assets/assets/players/kovacic.jpg": "eae685bf2cd83e5a69792068fb253adb",
 "assets/assets/players/rodri.jpg": "7348ad7721a3be5de1fa0891e0941b9f",
-"assets/fonts/MaterialIcons-Regular.otf": "15f9bc5a5f296f1dde0b502c53bfa697",
+"assets/fonts/MaterialIcons-Regular.otf": "e0bf7eab4de61f982cace3ed1e72824f",
 "assets/NOTICES": "1279a2fb12fa44cc38b65cea65c411b2",
 "assets/packages/fluttertoast/assets/toastify.css": "a85675050054f179444bc5ad70ffc635",
 "assets/packages/fluttertoast/assets/toastify.js": "56e2c9cedd97f10e7e5f1cebd85d53e3",
@@ -45,9 +45,9 @@ const RESOURCES = {"flutter.js": "24bc71911b75b5f8135c949e27a2984e",
 "canvaskit/canvaskit.js.symbols": "a3c9f77715b642d0437d9c275caba91e",
 "canvaskit/skwasm.js.symbols": "3a4aadf4e8141f284bd524976b1d6bdc",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
-"flutter_bootstrap.js": "06008dc39428460e9729edf69679f987",
+"flutter_bootstrap.js": "8201c4a2ce428e83b167f327ddad0d7f",
 "version.json": "155c5f8fcaff3e6d358b14203554ae15",
-"main.dart.js": "f129682082b65937633a6aed1ab7be17"};
+"main.dart.js": "47a1c847fea6e047ce82f7c4ff314055"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
