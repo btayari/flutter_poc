@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'home_screen.dart';
 import 'tactical_lineup_screen.dart';
 import 'squad_management_screen.dart';
 
@@ -31,11 +33,13 @@ class _MainShellScreenState extends State<MainShellScreen> {
   Widget _getSelectedScreen() {
     switch (_selectedIndex) {
       case 0:
-        return const TacticalLineupContent();
+        return const HomeScreen();
       case 1:
+        return const TacticalLineupContent();
+      case 2:
         return const SquadManagementContent();
       default:
-        return const TacticalLineupContent();
+        return const HomeScreen();
     }
   }
 
@@ -96,6 +100,21 @@ class _MainShellScreenState extends State<MainShellScreen> {
   }
 
   Widget _buildMobileAppBar() {
+    String title;
+    switch (_selectedIndex) {
+      case 0:
+        title = 'Home';
+        break;
+      case 1:
+        title = 'Tactical Lineup';
+        break;
+      case 2:
+        title = 'Squad Management';
+        break;
+      default:
+        title = 'Home';
+    }
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -117,18 +136,30 @@ class _MainShellScreenState extends State<MainShellScreen> {
           ),
           Expanded(
             child: Text(
-              _selectedIndex == 0 ? 'Tactical Lineup' : 'Squad Management',
+              title,
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
-          GestureDetector(
-            onTap: () {},
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
-              child: const Icon(Icons.settings, color: Colors.white, size: 24),
+          Opacity(
+            opacity: 0.5,
+            child: GestureDetector(
+              onTap: () {
+                Fluttertoast.showToast(
+                  msg: "This is an upcoming feature",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  backgroundColor: Colors.grey[800],
+                  textColor: Colors.white,
+                  fontSize: 14.0,
+                );
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                child: Icon(Icons.settings, color: Colors.grey[600], size: 24),
+              ),
             ),
           ),
         ],
@@ -217,8 +248,8 @@ class _SideMenuWithCallback extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 8),
       children: [
-        _buildMenuItem(icon: Icons.home_rounded, label: 'Home', index: -1, isActive: false),
-        _buildMenuItem(icon: Icons.sports_soccer, label: 'Tactical Lineup', index: 0, isActive: selectedIndex == 0),
+        _buildMenuItem(icon: Icons.home_rounded, label: 'Home', index: 0, isActive: selectedIndex == 0),
+        _buildMenuItem(icon: Icons.sports_soccer, label: 'Tactical Lineup', index: 1, isActive: selectedIndex == 1),
         _buildMenuItem(icon: Icons.swap_horiz_rounded, label: 'Transfers', index: -1, isActive: false),
         _buildMenuItem(icon: Icons.search_rounded, label: 'Scouting', index: -1, isActive: false),
         const SizedBox(height: 16),
@@ -226,7 +257,7 @@ class _SideMenuWithCallback extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Text('TEAM MANAGEMENT', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey[500], letterSpacing: 1.2)),
         ),
-        _buildMenuItem(icon: Icons.people_rounded, label: 'Squad Management', index: 1, isActive: selectedIndex == 1),
+        _buildMenuItem(icon: Icons.people_rounded, label: 'Squad Management', index: 2, isActive: selectedIndex == 2),
         _buildMenuItem(icon: Icons.bar_chart_rounded, label: 'Statistics', index: -1, isActive: false),
         _buildMenuItem(icon: Icons.event_note_rounded, label: 'Fixtures', index: -1, isActive: false),
         const SizedBox(height: 16),
@@ -241,29 +272,76 @@ class _SideMenuWithCallback extends StatelessWidget {
   }
 
   Widget _buildMenuItem({required IconData icon, required String label, required int index, required bool isActive}) {
+    final bool isEnabled = index >= 0; // Enabled if index is 0 or greater
+
     return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        decoration: BoxDecoration(
-          color: isActive ? const Color(0xFF0d59f2).withValues(alpha: 0.15) : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-          border: isActive ? Border.all(color: const Color(0xFF0d59f2).withValues(alpha: 0.3)) : null,
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
+      cursor: isEnabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
+      child: Opacity(
+        opacity: isEnabled ? 1.0 : 0.5,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            color: isActive ? const Color(0xFF0d59f2).withValues(alpha: 0.15) : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
-            onTap: () => onItemSelected(index),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              child: Row(
-                children: [
-                  Icon(icon, size: 22, color: isActive ? const Color(0xFF0d59f2) : Colors.grey[400]),
-                  const SizedBox(width: 14),
-                  Expanded(child: Text(label, style: TextStyle(fontSize: 14, fontWeight: isActive ? FontWeight.w600 : FontWeight.w500, color: isActive ? Colors.white : Colors.grey[400]))),
-                  if (isActive) Container(width: 6, height: 6, decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFF0d59f2))),
-                ],
+            border: isActive ? Border.all(color: const Color(0xFF0d59f2).withValues(alpha: 0.3)) : null,
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: () {
+                if (isEnabled) {
+                  onItemSelected(index);
+                } else {
+                  Fluttertoast.showToast(
+                    msg: "This is an upcoming feature",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.grey[800],
+                    textColor: Colors.white,
+                    fontSize: 14.0,
+                  );
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                child: Row(
+                  children: [
+                    Icon(
+                      icon,
+                      size: 22,
+                      color: isActive
+                        ? const Color(0xFF0d59f2)
+                        : isEnabled
+                          ? Colors.grey[400]
+                          : Colors.grey[600]
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                          color: isActive
+                            ? Colors.white
+                            : isEnabled
+                              ? Colors.grey[400]
+                              : Colors.grey[600]
+                        )
+                      )
+                    ),
+                    if (isActive)
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0xFF0d59f2)
+                        )
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -287,7 +365,16 @@ class _SideMenuWithCallback extends StatelessWidget {
           Expanded(child: Text('Dark Mode', style: TextStyle(fontSize: 13, color: Colors.grey[400]))),
           Switch(
             value: true,
-            onChanged: (value) {},
+            onChanged: (value) {
+              Fluttertoast.showToast(
+                msg: "This is an upcoming feature",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                backgroundColor: Colors.grey[800],
+                textColor: Colors.white,
+                fontSize: 14.0,
+              );
+            },
             activeTrackColor: const Color(0xFF0d59f2).withValues(alpha: 0.5),
             thumbColor: const WidgetStatePropertyAll(Color(0xFF0d59f2)),
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
