@@ -1303,6 +1303,7 @@ class _TransfersScreenState extends State<TransfersScreen> with SingleTickerProv
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
+
                                   colors: [Color(0xFFfbbf24), Color(0xFFf59e0b)],
                                 ),
                                 borderRadius: BorderRadius.circular(4),
