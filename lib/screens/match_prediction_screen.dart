@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/match_prediction.dart';
 import '../data/match_prediction_data.dart';
-import '../widgets/side_menu.dart';
 
 class MatchPredictionScreen extends StatelessWidget {
   const MatchPredictionScreen({super.key});
@@ -23,19 +22,12 @@ class MatchPredictionScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFF101622),
-      drawer: isWebLayout ? null : _buildDrawer(),
       body: SafeArea(
         child: isWebLayout ? _buildWebLayout(context) : _buildMobileLayout(context),
       ),
     );
   }
 
-  Widget _buildDrawer() {
-    return const Drawer(
-      backgroundColor: Color(0xFF0d1117),
-      child: SideMenu(),
-    );
-  }
 
   Widget _buildMobileLayout(BuildContext context) {
     final prediction = MatchPredictionData.getSamplePrediction();
@@ -109,95 +101,94 @@ class MatchPredictionScreen extends StatelessWidget {
   Widget _buildWebLayout(BuildContext context) {
     final prediction = MatchPredictionData.getSamplePrediction();
 
-    return Row(
+    return Column(
       children: [
-        // Side Menu
-        const SizedBox(
-          width: 250,
-          child: SideMenu(),
-        ),
-
-        // Main Content
-        Expanded(
-          child: Column(
+        // Header
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+          decoration: const BoxDecoration(
+            color: Color(0xFF101622),
+            border: Border(
+              bottom: BorderSide(color: Color(0xFF374151)),
+            ),
+          ),
+          child: Row(
             children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF101622),
-                  border: Border(
-                    bottom: BorderSide(color: Color(0xFF374151)),
+              IconButton(
+                icon: const Icon(Icons.chevron_left, color: Color(0xFF0d59f2), size: 28),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              const SizedBox(width: 8),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: const Text(
+                    'Back to Lineup',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF0d59f2),
+                    ),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.chevron_left, color: Color(0xFF0d59f2), size: 28),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: const Text(
-                        'Edit Lineup',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF0d59f2),
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    const Text(
-                      'Match Prediction',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    // Action Buttons
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Compare Scenarios - Coming Soon')),
-                        );
-                      },
-                      icon: const Icon(Icons.compare_arrows, size: 18),
-                      label: const Text('Compare Scenarios'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        side: const BorderSide(color: Color(0xFF374151)),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Export Report - Coming Soon')),
-                        );
-                      },
-                      icon: const Icon(Icons.download, size: 18),
-                      label: const Text('Export Report'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0d59f2),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        elevation: 0,
-                      ),
-                    ),
-                  ],
+              ),
+              const Spacer(),
+              const Text(
+                'Match Prediction',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+              const Spacer(),
+              // Action Buttons
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Compare Scenarios - Coming Soon')),
+                    );
+                  },
+                  icon: const Icon(Icons.compare_arrows, size: 18),
+                  label: const Text('Compare Scenarios'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Color(0xFF374151)),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Export Report - Coming Soon')),
+                    );
+                  },
+                  icon: const Icon(Icons.download, size: 18),
+                  label: const Text('Export Report'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0d59f2),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
 
-              // Content
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(32),
-                  child: Center(
-                    child: ConstrainedBox(
+        // Content
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(32),
+            child: Center(
+              child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 1200),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -237,11 +228,8 @@ class MatchPredictionScreen extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ),
-      ],
-    );
-  }
+          );
+        }
 
   Widget _buildMatchHeader(MatchPrediction prediction) {
     return Row(
